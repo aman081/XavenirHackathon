@@ -1,4 +1,4 @@
-import { Provider } from "../models/Provider.models.js";
+import { Provider } from "../models/provider.models.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import MyError from "../utils/MyError.js";
 import uploadFileOnCloudinary from "../utils/Cloudinary.js";
@@ -23,13 +23,11 @@ const registerProvider = asyncHandler(async (req, res) => {
 
     if (!provider) throw new MyError(500, "Failed to create provider");
 
-    return res
-        .status(201)
-        .json(
-            new MyResponse(201, "Provider registered successfully", {
-                provider,
-            }),
-        );
+    return res.status(201).json(
+        new MyResponse(201, "Provider registered successfully", {
+            provider,
+        }),
+    );
 });
 
 const loginProvider = asyncHandler(async (req, res) => {
@@ -52,9 +50,7 @@ const loginProvider = asyncHandler(async (req, res) => {
 
 const logoutProvider = asyncHandler(async (req, res) => {
     res.clearCookie("token", COOKIE_OPTIONS);
-    return res
-       .status(200)
-       .json(new MyResponse(200, "Logged out successfully"));
-})
+    return res.status(200).json(new MyResponse(200, "Logged out successfully"));
+});
 
 export { registerProvider, loginProvider, logoutProvider };
