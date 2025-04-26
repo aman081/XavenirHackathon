@@ -1,3 +1,5 @@
+import mongoose, { Schema, model } from "mongoose";
+
 const supplySchema = new Schema(
     {
         supplier: { type: Schema.Types.ObjectId, ref: "Provider" },

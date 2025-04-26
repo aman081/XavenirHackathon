@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { provider } from '../../services/api';
 
 const ProviderLogin = () => {
     const navigate = useNavigate();
@@ -7,19 +8,27 @@ const ProviderLogin = () => {
         email: '',
         password: ''
     });
+    const [error, setError] = useState('');
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle login logic here
-        console.log('Form data:', formData);
+        setError("");
+
+        try {
+            const response = await provider.login(formData);
+            if (response.data && response.data.provider) {
+                navigate('/provider/home');
+            } else {
+                throw new Error("Invalid response format");
+            }
+        } catch (err) {
+            console.error("Login error:", err);
+            setError(err.response?.data?.message || 'Login failed');
+        }
     };
 
     return (
@@ -32,15 +41,20 @@ const ProviderLogin = () => {
             </div>
 
             <div className="max-w-md w-full p-10 bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-yellow-100 relative z-10 transform transition-all duration-300 hover:shadow-3xl">
-                <div className="text-center mb-10">
+                <div className="text-center mb-8">
                     <h2 className="text-4xl font-bold text-gray-800 mb-3">
                         Provider Login
                     </h2>
                     <p className="text-gray-600">
-                        Welcome back! Please sign in to your account
+                        Welcome back! Please login to your account
                     </p>
-                    <div className="w-24 h-1.5 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 mx-auto mt-4 rounded-full"></div>
                 </div>
+
+                {error && (
+                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                        {error}
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
@@ -53,9 +67,8 @@ const ProviderLogin = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition duration-300"
-                            placeholder="Enter your email address"
                             required
+                            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
                         />
                     </div>
 
@@ -69,60 +82,18 @@ const ProviderLogin = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition duration-300"
-                            placeholder="Enter your password"
                             required
+                            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
                         />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <input
-                                id="remember-me"
-                                name="remember-me"
-                                type="checkbox"
-                                className="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
-                            />
-                            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                                Remember me
-                            </label>
-                        </div>
-
-                        <div className="text-sm">
-                            <a href="#" className="font-medium text-yellow-600 hover:text-yellow-500">
-                                Forgot password?
-                            </a>
-                        </div>
                     </div>
 
                     <button
                         type="submit"
-                        className="w-full flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 transform transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
+                        className="w-full bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors duration-200"
                     >
-                        Sign in
+                        Login
                     </button>
                 </form>
-
-                <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600">
-                        Don't have an account?{' '}
-                        <button
-                            onClick={() => navigate('/provider/register')}
-                            className="font-medium text-yellow-600 hover:text-yellow-500"
-                        >
-                            Register
-                        </button>
-                    </p>
-                </div>
-
-                <div className="mt-4 text-center">
-                    <button
-                        onClick={() => navigate('/')}
-                        className="text-sm font-medium text-gray-600 hover:text-gray-500"
-                    >
-                        Back to home
-                    </button>
-                </div>
             </div>
         </div>
     );

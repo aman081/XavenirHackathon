@@ -1,8 +1,20 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { FaBell, FaSignOutAlt, FaUserCircle } from 'react-icons/fa';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaBell, FaSignOutAlt, FaUserCircle } from "react-icons/fa";
+import { provider } from "../../services/api";
 
-const Navbar = () => {
+const Navbar = ({ profile, userType }) => {
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            await provider.logout();
+            navigate("/");
+        } catch (err) {
+            console.error("Error logging out:", err);
+        }
+    };
+
     return (
         <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 text-white shadow-lg fixed top-0 left-0 right-0 z-50 h-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
@@ -30,13 +42,16 @@ const Navbar = () => {
                                 <FaUserCircle className="h-8 w-8 text-emerald-300" />
                             </div>
                             <div className="hidden md:block">
-                                <p className="text-sm font-medium text-emerald-100">John Doe</p>
-                                <p className="text-xs text-emerald-200">Restaurant Owner</p>
+                                <p className="text-sm font-medium text-emerald-100">{profile?.name || "Loading..."}</p>
+                                <p className="text-xs text-emerald-200">{userType === "provider" ? "Provider" : "Distributor"}</p>
                             </div>
                         </div>
 
                         {/* Logout */}
-                        <button className="p-2 rounded-full hover:bg-gray-700/50 transition-all duration-300 group">
+                        <button 
+                            onClick={handleLogout}
+                            className="p-2 rounded-full hover:bg-gray-700/50 transition-all duration-300 group"
+                        >
                             <FaSignOutAlt className="h-6 w-6 text-emerald-100 group-hover:text-emerald-400 transition-colors duration-300" />
                         </button>
                     </div>

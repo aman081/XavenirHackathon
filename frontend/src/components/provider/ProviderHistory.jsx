@@ -1,40 +1,46 @@
 import React from 'react';
-import { FaHistory, FaStar, FaUtensils } from 'react-icons/fa';
+import { FaHistory, FaUtensils, FaLeaf, FaDrumstickBite, FaUsers, FaCalendarAlt, FaUser } from 'react-icons/fa';
 
 const ProviderHistory = () => {
-    // Dummy data for donation history
+    // Dummy data for donation history (will be replaced with backend data)
     const donationHistory = [
         {
             id: 1,
-            foodName: "Vegetable Biryani",
-            foodType: "vegetarian",
-            numberOfPeople: 25,
-            rating: 4.8,
-            date: "2024-03-15"
+            pickupDate: "2024-03-15",
+            pickupBy: "Mumbai Homeless Shelter",
+            foodItems: [
+                {
+                    id: 1,
+                    foodName: "Vegetable Biryani",
+                    foodType: "vegetarian",
+                    sufficientFor: 25
+                },
+                {
+                    id: 2,
+                    foodName: "Chicken Curry",
+                    foodType: "non-vegetarian",
+                    sufficientFor: 30
+                }
+            ]
         },
         {
             id: 2,
-            foodName: "Chicken Curry",
-            foodType: "non-vegetarian",
-            numberOfPeople: 30,
-            rating: 4.5,
-            date: "2024-03-14"
-        },
-        {
-            id: 3,
-            foodName: "Paneer Tikka",
-            foodType: "vegetarian",
-            numberOfPeople: 20,
-            rating: 4.9,
-            date: "2024-03-13"
-        },
-        {
-            id: 4,
-            foodName: "Fish Fry",
-            foodType: "non-vegetarian",
-            numberOfPeople: 15,
-            rating: 4.7,
-            date: "2024-03-12"
+            pickupDate: "2024-03-14",
+            pickupBy: "Children's Orphanage",
+            foodItems: [
+                {
+                    id: 3,
+                    foodName: "Paneer Tikka",
+                    foodType: "vegetarian",
+                    sufficientFor: 20
+                },
+                {
+                    id: 4,
+                    foodName: "Fish Fry",
+                    foodType: "non-vegetarian",
+                    sufficientFor: 15
+                }
+            ]
         }
     ];
 
@@ -54,35 +60,55 @@ const ProviderHistory = () => {
                             <p className="text-indigo-200">Your donation history will appear here.</p>
                         </div>
                     ) : (
-                        <div className="divide-y divide-indigo-900">
+                        <div className="space-y-8 p-8">
                             {donationHistory.map((donation) => (
-                                <div key={donation.id} className="p-8 hover:bg-indigo-900/50 transition-colors duration-200">
-                                    <div className="flex items-start space-x-6">
-                                        <div className="bg-indigo-900 p-4 rounded-lg">
-                                            <FaUtensils className="text-emerald-500 text-2xl" />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <h3 className="text-xl font-semibold text-emerald-500">{donation.foodName}</h3>
-                                            <div className="flex items-center space-x-6">
-                                                <span className="text-base text-indigo-200">
-                                                    {donation.foodType === 'vegetarian' ? 'Vegetarian' : 'Non-Vegetarian'}
-                                                </span>
-                                                <span className="text-base text-indigo-200">
-                                                    Sufficient for {donation.numberOfPeople} persons
-                                                </span>
+                                <div key={donation.id} className="bg-indigo-900 rounded-xl p-6 hover:bg-indigo-900/80 transition-colors duration-200">
+                                    {/* Pickup Details */}
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="flex items-center text-indigo-200">
+                                                <FaCalendarAlt className="text-emerald-500 mr-2" />
+                                                <span>{new Date(donation.pickupDate).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'short',
+                                                    day: 'numeric'
+                                                })}</span>
                                             </div>
-                                            <div className="flex items-center">
-                                                <FaStar className="text-yellow-400 text-lg mr-2" />
-                                                <span className="text-base font-medium text-white">{donation.rating}/5.0</span>
+                                            <div className="flex items-center text-indigo-200">
+                                                <FaUser className="text-emerald-500 mr-2" />
+                                                <span>Picked up by: {donation.pickupBy}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-base text-indigo-300">
-                                        {new Date(donation.date).toLocaleDateString('en-US', {
-                                            year: 'numeric',
-                                            month: 'short',
-                                            day: 'numeric'
-                                        })}
+
+                                    {/* Food Items */}
+                                    <div className="space-y-4">
+                                        {donation.foodItems.map((food) => (
+                                            <div key={food.id} className="bg-indigo-950 rounded-lg p-4">
+                                                <div className="flex items-start space-x-4">
+                                                    <div className="bg-indigo-900 p-3 rounded-lg">
+                                                        <FaUtensils className="text-emerald-500 text-xl" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h3 className="text-lg font-semibold text-emerald-500 mb-2">{food.foodName}</h3>
+                                                        <div className="flex items-center space-x-6">
+                                                            <div className="flex items-center text-indigo-200">
+                                                                {food.foodType === 'vegetarian' ? (
+                                                                    <FaLeaf className="text-emerald-500 mr-2" />
+                                                                ) : (
+                                                                    <FaDrumstickBite className="text-emerald-500 mr-2" />
+                                                                )}
+                                                                <span>{food.foodType === 'vegetarian' ? 'Vegetarian' : 'Non-Vegetarian'}</span>
+                                                            </div>
+                                                            <div className="flex items-center text-indigo-200">
+                                                                <FaUsers className="text-emerald-500 mr-2" />
+                                                                <span>Sufficient for {food.sufficientFor} persons</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             ))}

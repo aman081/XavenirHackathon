@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { provider } from '../../api/axios';
 
 const ProviderReg = () => {
     const navigate = useNavigate();
@@ -9,6 +10,7 @@ const ProviderReg = () => {
         password: '',
         avatar: null
     });
+    const [error, setError] = useState('');
     const [previewUrl, setPreviewUrl] = useState(null);
 
     const handleChange = (e) => {
@@ -26,16 +28,32 @@ const ProviderReg = () => {
                 ...prev,
                 avatar: file
             }));
-            // Create preview URL
-            const fileUrl = URL.createObjectURL(file);
-            setPreviewUrl(fileUrl);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result);
+            };
+            reader.readAsDataURL(file);
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle registration logic here
-        console.log('Form data:', formData);
+        try {
+            const submitData = new FormData();
+            submitData.append('name', formData.name);
+            submitData.append('email', formData.email);
+            submitData.append('password', formData.password);
+            if (formData.avatar) {
+                submitData.append('avatar', formData.avatar);
+            }
+
+            const response = await provider.register(submitData);
+            if (response.status === 201) {
+                navigate('/provider/login');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Registration failed. Please try again.');
+        }
     };
 
     return (
@@ -53,10 +71,16 @@ const ProviderReg = () => {
                         Provider Registration
                     </h2>
                     <p className="text-gray-600">
-                        Join our network of food providers
+                        Join us in making a difference
                     </p>
                     <div className="w-24 h-1.5 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 mx-auto mt-4 rounded-full"></div>
                 </div>
+
+                {error && (
+                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                        {error}
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
@@ -69,9 +93,8 @@ const ProviderReg = () => {
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition duration-300"
-                            placeholder="Enter your establishment name"
                             required
+                            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
                         />
                     </div>
 
@@ -85,9 +108,8 @@ const ProviderReg = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition duration-300"
-                            placeholder="Enter your email address"
                             required
+                            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
                         />
                     </div>
 
@@ -101,55 +123,29 @@ const ProviderReg = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition duration-300"
-                            placeholder="Enter your password"
                             required
+                            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
                         />
                     </div>
 
                     <div>
                         <label htmlFor="avatar" className="block text-sm font-medium text-gray-700 mb-2">
-                            Logo/Avatar
+                            Restaurant Logo
                         </label>
-                        <div className="flex items-center space-x-4">
-                            <div className="flex-shrink-0">
-                                {previewUrl ? (
-                                    <img
-                                        src={previewUrl}
-                                        alt="Preview"
-                                        className="h-16 w-16 rounded-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
-                                        <svg className="h-8 w-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                                        </svg>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex-1">
-                                <input
-                                    type="file"
-                                    id="avatar"
-                                    name="avatar"
-                                    onChange={handleFileChange}
-                                    accept="image/*"
-                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center">
                         <input
-                            id="remember-me"
-                            name="remember-me"
-                            type="checkbox"
-                            className="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
+                            type="file"
+                            id="avatar"
+                            name="avatar"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            required
+                            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
                         />
-                        <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                            Remember me
-                        </label>
+                        {previewUrl && (
+                            <div className="mt-2">
+                                <img src={previewUrl} alt="Preview" className="h-20 w-20 object-cover rounded-lg" />
+                            </div>
+                        )}
                     </div>
 
                     <button

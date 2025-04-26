@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { distributor } from '../../api/axios';
 
 const DistributorReg = () => {
     const navigate = useNavigate();
@@ -7,9 +8,10 @@ const DistributorReg = () => {
         name: '',
         email: '',
         password: '',
-        uin: '',
+        uniqueIdentifier: '',
         avatar: null
     });
+    const [error, setError] = useState('');
     const [previewUrl, setPreviewUrl] = useState(null);
 
     const handleChange = (e) => {
@@ -35,10 +37,16 @@ const DistributorReg = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle registration logic here
-        console.log('Form data:', formData);
+        try {
+            const response = await distributor.register(formData, formData.avatar);
+            if (response.status === 201) {
+                navigate('/distributor/login');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Registration failed. Please try again.');
+        }
     };
 
     return (
@@ -60,6 +68,12 @@ const DistributorReg = () => {
                     </p>
                     <div className="w-24 h-1.5 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 mx-auto mt-4 rounded-full"></div>
                 </div>
+
+                {error && (
+                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                        {error}
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
@@ -108,14 +122,14 @@ const DistributorReg = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="uin" className="block text-sm font-medium text-gray-700 mb-2">
-                            UIN (NGO ID)
+                        <label htmlFor="uniqueIdentifier" className="block text-sm font-medium text-gray-700 mb-2">
+                            Unique Identifier
                         </label>
                         <input
                             type="text"
-                            id="uin"
-                            name="uin"
-                            value={formData.uin}
+                            id="uniqueIdentifier"
+                            name="uniqueIdentifier"
+                            value={formData.uniqueIdentifier}
                             onChange={handleChange}
                             required
                             className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
@@ -123,36 +137,23 @@ const DistributorReg = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="avatar" className="block text-sm font-medium text-gray-700 mb-2">
                             Organization Logo
                         </label>
-                        <div className="flex items-center space-x-4">
-                            <div className="flex-shrink-0">
-                                {previewUrl ? (
-                                    <img
-                                        src={previewUrl}
-                                        alt="Preview"
-                                        className="h-16 w-16 rounded-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
-                                        <svg className="h-8 w-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                                        </svg>
-                                    </div>
-                                )}
+                        <input
+                            type="file"
+                            id="avatar"
+                            name="avatar"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            required
+                            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
+                        />
+                        {previewUrl && (
+                            <div className="mt-2">
+                                <img src={previewUrl} alt="Preview" className="h-20 w-20 object-cover rounded-lg" />
                             </div>
-                            <div className="flex-1">
-                                <input
-                                    type="file"
-                                    id="avatar"
-                                    name="avatar"
-                                    onChange={handleFileChange}
-                                    accept="image/*"
-                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100"
-                                />
-                            </div>
-                        </div>
+                        )}
                     </div>
 
                     <button
