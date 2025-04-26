@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
-//
+import cookieParser from "cookie-parser";
 import { fileURLToPath } from "url";
 
 import http from "http";
