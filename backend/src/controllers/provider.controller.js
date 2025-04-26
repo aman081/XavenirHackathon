@@ -1,4 +1,4 @@
-import { Provider } from "../models/Provider.models.js";
+import { Provider } from "../models/provider.models.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import MyError from "../utils/MyError.js";
 import uploadFileOnCloudinary from "../utils/Cloudinary.js";
