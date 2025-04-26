@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose,{ Schema, model } from "mongoose";
 
 const foodSchema = new Schema(
     {

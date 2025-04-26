@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose,{ Schema, model, Object } from "mongoose";
 
 const distributorSchema = new Schema(
     {
@@ -13,6 +13,12 @@ const distributorSchema = new Schema(
     },
     { timestamps: true },
 );
+
+distributorSchema.pre("save", async function(next){
+    if(!this.isModified("password")) return next();
+    this.password = await bcrypt.hash(this.password, 10);
+})
+
 
 export const distributor =
     mongoose.models.Distributor || model("Distributor", distributorSchema);

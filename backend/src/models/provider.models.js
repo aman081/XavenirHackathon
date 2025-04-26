@@ -1,4 +1,5 @@
-import { Schema } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
+import bcrypt from "bcrypt";
 
 const providerSchema = new Schema(
     {
@@ -6,11 +7,17 @@ const providerSchema = new Schema(
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
         avatar: { type: String },
-        location: { type: String, required: true },
         rating: { type: Number, default: 0 },
     },
     { timestamps: true },
 );
+
+providerSchema.pre("save", async function(next){
+    if(!this.isModified("password")) return next();
+    this.password = await bcrypt.hash(this.password, 10);
+})
+
+
 
 export const Provider =
     mongoose.models.Provider || model("Provider", providerSchema);
