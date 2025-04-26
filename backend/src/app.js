@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { corsOptions } from "./constants.js";
 import { errorHandler } from "./middlewares/errorHandler.middleware.js";
+import adminRoute from "./routes/admin.routes.js";
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.get("/test", (req, res) => {
     res.send("Home route active!");
 });
+
+app.use("/admin", adminRoute);
 
 app.use(errorHandler);
 
