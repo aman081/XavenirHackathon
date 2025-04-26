@@ -19,7 +19,8 @@ app.get("/logout", logoutProvider);
 
 app.use(isAuthenticated);
 app.post("/supply", upload.single("foodPhoto"), supplyFood);
-app.post("/recipients", showRecepients);
+
+app.post("/recepients", showRecepients);
 app.post("/choose-distributor", chooseDistributor);
 app.post("/give-rating", giveRating);
 

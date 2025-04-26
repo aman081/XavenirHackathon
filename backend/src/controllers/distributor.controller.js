@@ -1,7 +1,9 @@
 import { compare } from "bcrypt";
 import jwt from "jsonwebtoken";
 import { COOKIE_OPTIONS } from "../constants.js";
-import { Distributor } from "../models/distributor.models.js";
+
+import { Distributor } from "../models/Distributor.models.js";
+import { Supply } from "../models/supply.models.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import uploadFileOnCloudinary from "../utils/Cloudinary.js";
 import MyError from "../utils/MyError.js";
@@ -13,15 +15,18 @@ const registerDistributor = asyncHandler(async (req, res) => {
     const { name, email, password, uniqueIdentifier } = req.body;
 
     if (!name || !email || !password || !uniqueIdentifier)
-        throw new MyError(404, "All fields are required");
+        throw new MyError(400, "All fields are required");
+
+    const existing = await Distributor.findOne({ email });
+    if (existing) throw new MyError(409, "Distributor already exists");
 
     const avatarLocalPath = req.file?.path;
     const avatar = await uploadFileOnCloudinary(name, avatarLocalPath);
 
     if (!avatar)
-        throw new MyError(500, "Failed to upload avatar to Cloudinary!");
+        throw new MyError(500, "Failed to upload avatar to Cloudinary");
 
-    const provider = await Distributor.create({
+    const distributor = await Distributor.create({
         name,
         email,
         password,
@@ -29,7 +34,8 @@ const registerDistributor = asyncHandler(async (req, res) => {
         uniqueIdentifier,
     });
 
-    if (!provider) throw new MyError(500, "Failed to create provider");
+    if (!distributor) throw new MyError(500, "Failed to register distributor");
+    distributor.password = undefined;
 
     return res
         .status(201)
@@ -37,33 +43,44 @@ const registerDistributor = asyncHandler(async (req, res) => {
             new MyResponse(
                 201,
                 "Distributor registered successfully! Waiting to be verified!",
-                { provider },
+                { distributor },
             ),
         );
 });
 
 const loginDistributor = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
+
     if (!email || !password)
-        throw new MyError(404, "Email and password are required");
+        throw new MyError(400, "Email and password are required");
 
-    const provider = await Distributor.findOne({ email });
-    if (!provider) throw new MyError(404, "User not found");
+    const distributor = await Distributor.findOne({ email });
+    if (!distributor) throw new MyError(404, "Distributor not found");
 
-    const isMatch = await compare(password, provider.password);
-    if (!isMatch) throw new MyError(401, "Invalid password");
+    const isMatch = await compare(password, distributor.password);
+    if (!isMatch) throw new MyError(401, "Invalid credentials");
 
-    const token = jwt.sign({ id: provider._id }, process.env.TOKEN_SECRET_KEY);
+    const token = jwt.sign(
+        { id: distributor._id },
+        process.env.TOKEN_SECRET_KEY,
+        {
+            expiresIn: process.env.TOKEN_EXPIRATION_TIME,
+        },
+    );
+
+    distributor.password = undefined;
+
     return res
         .status(200)
         .cookie("token", token, COOKIE_OPTIONS)
-        .json(new MyResponse(200, "Logged in successfully", { provider }));
+        .json(new MyResponse(200, "Logged in successfully", { distributor }));
 });
 
 const logoutDistributor = asyncHandler(async (req, res) => {
     res.clearCookie("token", COOKIE_OPTIONS);
     return res.status(200).json(new MyResponse(200, "Logged out successfully"));
 });
+
 
 const giveRating = asyncHandler(async (req, res) => {
     const { supplyId, rating } = req.body;
@@ -107,4 +124,86 @@ const giveRating = asyncHandler(async (req, res) => {
        .json(new MyResponse(200, "Rating given successfully"));
 });
 
-export { loginDistributor, logoutDistributor, registerDistributor, giveRating };
+const getSuppliesNearMe = asyncHandler(async (req, res) => {
+    const { latitude, longitude, maxDistance = 5000 } = req.query;
+
+    if (!latitude || !longitude)
+        throw new MyError(400, "Latitude and Longitude are required");
+
+    const supplies = await Supply.find({
+        providerLocation: {
+            $near: {
+                $geometry: {
+                    type: "Point",
+                    coordinates: [parseFloat(longitude), parseFloat(latitude)],
+                },
+                $maxDistance: parseInt(maxDistance),
+            },
+        },
+        receiver: null,
+    });
+
+    if (!supplies.length) throw new MyError(404, "No supplies found nearby");
+
+    return res
+        .status(200)
+        .json(new MyResponse(200, "Supplies fetched successfully", supplies));
+});
+
+const selectSupply = asyncHandler(async (req, res) => {
+    const { supplyId } = req.params;
+
+    if (!supplyId) throw new MyError(400, "Supply ID is required");
+
+    const distributorId = req.user;
+
+    const supply = await Supply.findById(supplyId);
+    if (!supply) throw new MyError(404, "Supply not found");
+
+    if (supply.receiver)
+        throw new MyError(
+            400,
+            "This supply is already assigned to a distributor",
+        );
+
+    supply.receiver = distributorId;
+    await supply.save();
+
+    return res
+        .status(200)
+        .json(new MyResponse(200, "Supply selected successfully", supply));
+});
+
+const givePhotoForSupply = asyncHandler(async (req, res) => {
+    const { supplyId } = req.body;
+    if (!supplyId) throw new MyError(400, "Supply ID is required");
+    if (!req.file) throw new MyError(400, "Photo is required");
+
+    const distributorId = req.user;
+
+    const supply = await Supply.findById(supplyId);
+    if (!supply) throw new MyError(404, "Supply not found");
+
+    if (supply.receiver.toString() !== distributorId.toString())
+        throw new MyError(
+            403,
+            "You are not authorized to give photo for this supply",
+        );
+
+    const photoLocalPath = req.file?.path;
+    supply.photo = await uploadFileOnCloudinary(supply._id, photoLocalPath);
+
+    await supply.save();
+    return res
+        .status(200)
+        .json(new MyResponse(200, "Photo uploaded successfully", supply));
+});
+
+export {
+    getSuppliesNearMe,
+    loginDistributor,
+    logoutDistributor,
+    registerDistributor,
+    selectSupply,giveRating
+};
+

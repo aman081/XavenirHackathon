@@ -44,6 +44,7 @@ const loginProvider = asyncHandler(async (req, res) => {
     if (!isMatch) throw new MyError(401, "Invalid password");
 
     const token = jwt.sign({ id: provider._id }, process.env.TOKEN_SECRET_KEY);
+    provider.password = undefined;
     return res
         .status(200)
         .cookie("token", token, COOKIE_OPTIONS)
@@ -56,8 +57,9 @@ const logoutProvider = asyncHandler(async (req, res) => {
 });
 
 const supplyFood = asyncHandler(async (req, res) => {
-    const { foods } = req.body;
-    if (!foods) throw new MyError(404, "Foods are required");
+    const { foods, providerLatitude, providerLongitude } = req.body;
+    if (!foods || !foods.length || !providerLatitude || !providerLongitude)
+        throw new MyError(400, "Foods and provider location are required");
 
     const supplyPhotoPath = req.file?.path;
     const providerSupplyPhoto = await uploadFileOnCloudinary(
@@ -65,10 +67,23 @@ const supplyFood = asyncHandler(async (req, res) => {
         supplyPhotoPath,
     );
 
-    const supply = await Supply.create({ foods, providerSupplyPhoto });
+    const providerLocation = {
+        type: "Point",
+        coordinates: [
+            parseFloat(providerLongitude),
+            parseFloat(providerLatitude),
+        ],
+    };
+
+    const supply = await Supply.create({
+        food: foods,
+        providerSupplyPhoto,
+        providerLocation,
+    });
+
     if (!supply) throw new MyError(500, "Failed to create supply");
 
-    // socket send notification to distributors
+    // TODO: socket.emit to distributors (you mentioned)
 
     return res
         .status(201)
@@ -79,39 +94,53 @@ const showRecepients = asyncHandler(async (req, res) => {
     const { supplyId } = req.body;
     if (!supplyId) throw new MyError(400, "Supply ID is required");
 
-    const supply = await Supply.findById(supplyId);
+    const supply = await Supply.findById(supplyId).populate("recepients");
     if (!supply) throw new MyError(404, "Supply not found");
 
     if (!supply.recepients.length)
-        throw new MyError(404, "No recipients found for this supply");
+        throw new MyError(404, "No recepients found for this supply");
 
-    return res
-        .status(200)
-        .json(new MyResponse(200, "Recepients",{ recepients: supply.recepients}));
+    return res.status(200).json(
+        new MyResponse(200, "Recepients fetched", {
+            recepients: supply.recepients,
+        }),
+    );
 });
 
 const chooseDistributor = asyncHandler(async (req, res) => {
-    const { supplyId, distributorId } = req.body;
-    if (!supplyId || !distributorId)
-        throw new MyError(404, "Supply ID and distributor ID are required");
+    const {
+        supplyId,
+        distributorId,
+        distributorLatitude,
+        distributorLongitude,
+    } = req.body;
 
-    let supply = null;
-    try {
-        supply = await Supply.findByIdAndUpdate(
-            supplyId,
-            { $set: { receiver: distributorId } },
-            {
-                $set: {
-                    recepients: [],
-                },
-            },
-            { new: true },
+    if (
+        !supplyId ||
+        !distributorId ||
+        !distributorLatitude ||
+        !distributorLongitude
+    )
+        throw new MyError(
+            400,
+            "Supply ID, distributor ID and location are required",
         );
-    } catch (error) {
-        if (!supply) throw new MyError(404, "Supply not found");
-        if (!supply.receiver)
-            throw new MyError(404, "Distributor not found for this supply");
-    }
+
+    const distributorLocation = {
+        type: "Point",
+        coordinates: [
+            parseFloat(distributorLongitude),
+            parseFloat(distributorLatitude),
+        ],
+    };
+
+    const supply = await Supply.findById(supplyId);
+    if (!supply) throw new MyError(404, "Supply not found");
+
+    supply.receiver = distributorId;
+    supply.recepients = [];
+    supply.distributorLocation = distributorLocation;
+    await supply.save();
 
     return res
         .status(200)
