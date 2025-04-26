@@ -6,10 +6,11 @@ import jwt from "jsonwebtoken";
 import { COOKIE_OPTIONS } from "../constants.js";
 import MyResponse from "../utils/MyResponse.js";
 import { compare } from "bcrypt";
+import { Supply } from "../models/supply.models.js";
 
 const registerProvider = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
-    if (!name && !email && !password)
+    if (!name || !email || !password)
         throw new MyError(404, "All fields are required");
 
     const avatarLocalPath = req.file?.path;
@@ -23,13 +24,11 @@ const registerProvider = asyncHandler(async (req, res) => {
 
     if (!provider) throw new MyError(500, "Failed to create provider");
 
-    return res
-        .status(201)
-        .json(
-            new MyResponse(201, "Provider registered successfully", {
-                provider,
-            }),
-        );
+    return res.status(201).json(
+        new MyResponse(201, "Provider registered successfully", {
+            provider,
+        }),
+    );
 });
 
 const loginProvider = asyncHandler(async (req, res) => {
@@ -52,9 +51,79 @@ const loginProvider = asyncHandler(async (req, res) => {
 
 const logoutProvider = asyncHandler(async (req, res) => {
     res.clearCookie("token", COOKIE_OPTIONS);
-    return res
-       .status(200)
-       .json(new MyResponse(200, "Logged out successfully"));
-})
+    return res.status(200).json(new MyResponse(200, "Logged out successfully"));
+});
 
-export { registerProvider, loginProvider, logoutProvider };
+const supplyFood = asyncHandler(async (req, res) => {
+    const { foods } = req.body;
+    if (!foods) throw new MyError(404, "Foods are required");
+
+    const supplyPhotoPath = req.file?.path;
+    const providerSupplyPhoto = await uploadFileOnCloudinary(
+        req.file.filename,
+        supplyPhotoPath,
+    );
+
+    const supply = await Supply.create({ foods, providerSupplyPhoto });
+    if (!supply) throw new MyError(500, "Failed to create supply");
+
+    // socket send notification to distributors
+
+    return res
+        .status(201)
+        .json(new MyResponse(201, "Food provided successfully", { supply }));
+});
+
+const showRecepients = asyncHandler(async (req, res) => {
+    const { supplyId } = req.body;
+    if (!supplyId) throw new MyError(400, "Supply ID is required");
+
+    const supply = await Supply.findById(supplyId);
+    if (!supply) throw new MyError(404, "Supply not found");
+
+    if (!supply.recepients.length)
+        throw new MyError(404, "No recipients found for this supply");
+
+    return res
+        .status(200)
+        .json(new MyResponse(200, "Recepients",{ recepients: supply.recepients}));
+});
+
+const chooseDistributor = asyncHandler(async (req, res) => {
+    const { supplyId, distributorId } = req.body;
+    if (!supplyId || !distributorId)
+        throw new MyError(404, "Supply ID and distributor ID are required");
+
+    let supply = null;
+    try {
+        supply = await Supply.findByIdAndUpdate(
+            supplyId,
+            { $set: { receiver: distributorId } },
+            {
+                $set: {
+                    recepients: [],
+                },
+            },
+            { new: true },
+        );
+    } catch (error) {
+        if (!supply) throw new MyError(404, "Supply not found");
+        if (!supply.receiver)
+            throw new MyError(404, "Distributor not found for this supply");
+    }
+
+    return res
+        .status(200)
+        .json(
+            new MyResponse(200, "Distributor chosen successfully", { supply }),
+        );
+});
+
+export {
+    registerProvider,
+    loginProvider,
+    logoutProvider,
+    supplyFood,
+    showRecepients,
+    chooseDistributor,
+};

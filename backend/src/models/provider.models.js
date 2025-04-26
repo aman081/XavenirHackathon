@@ -7,7 +7,7 @@ const providerSchema = new Schema(
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
         avatar: { type: String },
-        rating: { type: Number, default: 0 },
+        rating: { type: Number, default: 0, min: 0, max: 5 },
     },
     { timestamps: true },
 );
