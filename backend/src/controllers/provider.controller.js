@@ -7,6 +7,7 @@ import { COOKIE_OPTIONS } from "../constants.js";
 import MyResponse from "../utils/MyResponse.js";
 import { compare } from "bcrypt";
 import { Supply } from "../models/supply.models.js";
+import { Distributor } from "../models/distributor.models.js";
 
 const registerProvider = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
@@ -119,6 +120,48 @@ const chooseDistributor = asyncHandler(async (req, res) => {
         );
 });
 
+const giveRating = asyncHandler(async (req, res) => {
+    const { supplyId, rating } = req.body;
+    if (!supplyId || !rating)
+        throw new MyError(404, "Provider ID and rating are required");
+
+    if (rating < 1 || rating > 5) {
+        throw new MyError(400, "Rating must be between 1 and 5");
+    }
+
+    const supply = await Supply.findById(supplyId);
+
+    if(!supply) throw new MyError(404, "Supply not found");
+
+
+    const distributor = await Distributor.findById(supply.distributorId);
+    if (!distributor) throw new MyError(404, "distributor not found");
+
+    if (supply.distributorRating)
+        throw new MyError(
+            400,
+            "You have already given a rating for this distributor",
+        );
+
+    supply.distributorRating = rating;
+
+    await supply.save();
+
+    const newCount = distributor.rating.count + 1;
+    const newAverage =
+        (distributor.rating.average * distributor.rating.count + rating) / newCount;
+    await Distributor.findByIdAndUpdate(supply.distributorId, {
+        $set: {
+            "rating.average": newAverage,
+            "rating.count": newCount,
+        },
+    });
+
+    return res
+       .status(200)
+       .json(new MyResponse(200, "Rating given successfully"));
+});
+
 export {
     registerProvider,
     loginProvider,
@@ -126,4 +169,5 @@ export {
     supplyFood,
     showRecepients,
     chooseDistributor,
+    giveRating,
 };

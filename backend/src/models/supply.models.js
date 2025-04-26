@@ -19,10 +19,10 @@ const supplySchema = new Schema(
         location: { type: String },
         providerSupplyPhoto: { type: String, required: true },
         distributorSupplyPhotos: [{ type: String }],
+        providerRating: {type: Number, default: null },
+        distributorRatings: {type: Number, default: null},
     },
     { timestamps: true },
 );
-
-
 
 export const Supply = mongoose.models.Supply || model("Supply", supplySchema);

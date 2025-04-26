@@ -8,7 +8,10 @@ const distributorSchema = new Schema(
         avatar: { type: String },
         uniqueIdentifier: { type: String, required: true, unique: true },
         isVerified: { type: Boolean, default: false },
-        rating: { type: Number, default: 0, min: 0, max: 5 },
+        rating: {
+            average: { type: Number, default: 0, min: 0, max: 5 },
+            count: { type: Number, default: 0 } 
+        }
     },
     { timestamps: true },
 );
@@ -18,5 +21,5 @@ distributorSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, 10);
 });
 
-export const distributor =
+export const Distributor =
     mongoose.models.Distributor || model("Distributor", distributorSchema);

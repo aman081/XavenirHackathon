@@ -1,11 +1,13 @@
 import { compare } from "bcrypt";
 import jwt from "jsonwebtoken";
 import { COOKIE_OPTIONS } from "../constants.js";
-import { Distributor } from "../models/Distributor.models.js";
+import { Distributor } from "../models/distributor.models.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import uploadFileOnCloudinary from "../utils/Cloudinary.js";
 import MyError from "../utils/MyError.js";
 import MyResponse from "../utils/MyResponse.js";
+import { Provider } from "../models/provider.models.js";
+import { Supply } from "../models/supply.models.js";
 
 const registerDistributor = asyncHandler(async (req, res) => {
     const { name, email, password, uniqueIdentifier } = req.body;
@@ -63,4 +65,46 @@ const logoutDistributor = asyncHandler(async (req, res) => {
     return res.status(200).json(new MyResponse(200, "Logged out successfully"));
 });
 
-export { loginDistributor, logoutDistributor, registerDistributor };
+const giveRating = asyncHandler(async (req, res) => {
+    const { supplyId, rating } = req.body;
+    if (!supplyId || !rating)
+        throw new MyError(404, "Provider ID and rating are required");
+
+    if (rating < 1 || rating > 5) {
+        throw new MyError(400, "Rating must be between 1 and 5");
+    }
+
+    const supply = await Supply.findById(supplyId);
+
+    if(!supply) throw new MyError(404, "Supply not found");
+
+
+    const provider = await Provider.findById(supply.providerId);
+    if (!provider) throw new MyError(404, "Provider not found");
+
+    if (supply.providerRating)
+        throw new MyError(
+            400,
+            "You have already given a rating for this provider",
+        );
+
+    supply.providerRating = rating;
+
+    await supply.save();
+
+    const newCount = provider.rating.count + 1;
+    const newAverage =
+        (provider.rating.average * provider.rating.count + rating) / newCount;
+    await Provider.findByIdAndUpdate(supply.providerId, {
+        $set: {
+            "rating.average": newAverage,
+            "rating.count": newCount,
+        },
+    });
+
+    return res
+       .status(200)
+       .json(new MyResponse(200, "Rating given successfully"));
+});
+
+export { loginDistributor, logoutDistributor, registerDistributor, giveRating };
