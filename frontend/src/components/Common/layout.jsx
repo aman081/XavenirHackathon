@@ -1,11 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./navbar";
 import ProviderSidebar from "./ProviderSidebar";
 import DistributorSidebar from "./DistributorSidebar";
 import Footer from "./footer";
+import { provider } from "../../services/api";
 
 const Layout = ({ children, userType }) => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [profile, setProfile] = useState(null);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            if (userType === "provider") {
+                try {
+                    const response = await provider.getProfile();
+                    if (response.data) {
+                        setProfile(response.data.data.provider);
+                    }
+                } catch (err) {
+                    console.error("Error fetching profile:", err);
+                }
+            }
+        };
+
+        fetchProfile();
+    }, [userType]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-yellow-100 to-yellow-200 relative overflow-hidden flex flex-col">
@@ -16,7 +35,7 @@ const Layout = ({ children, userType }) => {
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-yellow-500 rounded-full blur-2xl"></div>
             </div>
             
-            <Navbar />
+            <Navbar profile={profile} userType={userType} />
             <div className="flex relative z-10 flex-1 min-h-0 pt-24">
                 {userType === "provider" ? (
                     <ProviderSidebar onCollapse={setIsSidebarCollapsed} />

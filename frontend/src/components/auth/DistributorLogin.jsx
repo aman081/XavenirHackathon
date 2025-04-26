@@ -1,38 +1,45 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { distributor } from '../../api/axios';
 
 const DistributorLogin = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
-        password: '',
-        rememberMe: false
+        password: ''
     });
+    const [error, setError] = useState('');
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: value
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle login logic here
-        console.log('Login form submitted:', formData);
+        try {
+            const response = await distributor.login(formData);
+            if (response.data.token) {
+                navigate('/distributor/home');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Login failed. Please try again.');
+        }
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-yellow-100 to-yellow-200 flex items-center justify-center relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-indigo-100 to-indigo-200 flex items-center justify-center relative overflow-hidden">
             {/* Decorative elements */}
             <div className="absolute top-0 left-0 w-full h-full opacity-10">
-                <div className="absolute top-20 left-20 w-32 h-32 bg-yellow-300 rounded-full blur-2xl"></div>
-                <div className="absolute bottom-20 right-20 w-32 h-32 bg-yellow-400 rounded-full blur-2xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-yellow-500 rounded-full blur-2xl"></div>
+                <div className="absolute top-20 left-20 w-32 h-32 bg-indigo-300 rounded-full blur-2xl"></div>
+                <div className="absolute bottom-20 right-20 w-32 h-32 bg-indigo-400 rounded-full blur-2xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-indigo-500 rounded-full blur-2xl"></div>
             </div>
 
-            <div className="max-w-md w-full p-10 bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-yellow-100 relative z-10 transform transition-all duration-300 hover:shadow-3xl">
+            <div className="max-w-md w-full p-10 bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-indigo-100 relative z-10 transform transition-all duration-300 hover:shadow-3xl">
                 <div className="text-center mb-8">
                     <h2 className="text-4xl font-bold text-gray-800 mb-3">
                         Distributor Login
@@ -42,9 +49,15 @@ const DistributorLogin = () => {
                     </p>
                 </div>
 
+                {error && (
+                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                        {error}
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                             Email Address
                         </label>
                         <input
@@ -53,14 +66,13 @@ const DistributorLogin = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300"
-                            placeholder="Enter your email"
                             required
+                            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                             Password
                         </label>
                         <input
@@ -69,59 +81,18 @@ const DistributorLogin = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300"
-                            placeholder="Enter your password"
                             required
+                            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <input
-                                type="checkbox"
-                                id="rememberMe"
-                                name="rememberMe"
-                                checked={formData.rememberMe}
-                                onChange={handleChange}
-                                className="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
-                            />
-                            <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
-                                Remember me
-                            </label>
-                        </div>
-                        <a href="#" className="text-sm text-yellow-600 hover:text-yellow-700">
-                            Forgot password?
-                        </a>
                     </div>
 
                     <button
                         type="submit"
-                        className="w-full flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 transform transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
+                        className="w-full bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200"
                     >
                         Login
                     </button>
-
-                    <div className="text-center mt-4">
-                        <p className="text-sm text-gray-600">
-                            Don't have an account?{' '}
-                            <button
-                                onClick={() => navigate('/distributor/register')}
-                                className="text-yellow-600 hover:text-yellow-700 font-medium"
-                            >
-                                Register here
-                            </button>
-                        </p>
-                    </div>
                 </form>
-
-                <div className="mt-6 text-center">
-                    <button
-                        onClick={() => navigate('/')}
-                        className="text-sm text-gray-600 hover:text-gray-800"
-                    >
-                        ← Back to Home
-                    </button>
-                </div>
             </div>
         </div>
     );
