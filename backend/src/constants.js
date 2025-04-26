@@ -11,3 +11,5 @@ export const COOKIE_OPTIONS = {
     // sameSite: "None",
 };
 export const AVATAR_TEMP_PATH = "./public/temp";
+export const AdminUsername = "admin";
+export const AdminPassword = "admin";
