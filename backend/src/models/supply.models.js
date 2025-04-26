@@ -40,6 +40,8 @@ const supplySchema = new Schema(
         },
         providerSupplyPhoto: { type: String, required: true },
         distributorSupplyPhotos: [{ type: String }],
+        providerRating: {type: Number, default: null },
+        distributorRatings: {type: Number, default: null},
     },
     { timestamps: true },
 );

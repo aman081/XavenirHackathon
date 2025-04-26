@@ -2,6 +2,7 @@ import express from "express";
 import upload from "../middlewares/multer.middleware.js";
 import {
     chooseDistributor,
+    giveRating,
     loginProvider,
     logoutProvider,
     registerProvider,
@@ -18,7 +19,9 @@ app.get("/logout", logoutProvider);
 
 app.use(isAuthenticated);
 app.post("/supply", upload.single("foodPhoto"), supplyFood);
+
 app.post("/recepients", showRecepients);
 app.post("/choose-distributor", chooseDistributor);
+app.post("/give-rating", giveRating);
 
 export default app;
