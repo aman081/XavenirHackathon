@@ -1,5 +1,3 @@
-import mongoose, { Schema, model } from "mongoose";
-
 const supplySchema = new Schema(
     {
         supplier: { type: Schema.Types.ObjectId, ref: "Provider" },
@@ -16,13 +14,37 @@ const supplySchema = new Schema(
                 quantity: { type: Number, required: true },
             },
         ],
-        location: { type: String },
+        providerLocation: {
+            type: {
+                type: String,
+                enum: ["Point"],
+                required: true,
+                default: "Point",
+            },
+            coordinates: {
+                type: [Number],
+                required: true,
+            },
+        },
+        distributorLocation: {
+            type: {
+                type: String,
+                enum: ["Point"],
+                required: true,
+                default: "Point",
+            },
+            coordinates: {
+                type: [Number],
+                required: true,
+            },
+        },
         providerSupplyPhoto: { type: String, required: true },
         distributorSupplyPhotos: [{ type: String }],
     },
     { timestamps: true },
 );
 
-
+supplySchema.index({ providerLocation: "2dsphere" });
+supplySchema.index({ distributorLocation: "2dsphere" });
 
 export const Supply = mongoose.models.Supply || model("Supply", supplySchema);
