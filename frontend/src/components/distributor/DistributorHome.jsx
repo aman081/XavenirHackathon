@@ -93,7 +93,7 @@ const DistributorHome = () => {
                     <div className="flex items-center mb-4">
                         <FaHome className="text-emerald-500 text-3xl mr-4" />
                         <h1 className="text-3xl font-bold text-emerald-500">
-                            Welcome to FoodShare
+                            Welcome to SURPLUS
                         </h1>
                     </div>
                     <p className="text-indigo-200 text-lg">

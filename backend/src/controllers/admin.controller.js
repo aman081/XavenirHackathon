@@ -74,16 +74,13 @@ const getUnverifiedDistributors = asyncHandler(async (req, res) => {
     if (!unverifiedDistributors.length)
         throw new MyError(404, "No unverified distributors found");
 
-    const unverifiedDistributorsId = unverifiedDistributors.map(
-        (distributor) => (id = distributor._id),
-    );
 
     return res
         .status(200)
         .json(
             new MyResponse(
                 200,
-                unverifiedDistributorsId,
+                unverifiedDistributors,
                 "Found unverified distributors",
             ),
         );

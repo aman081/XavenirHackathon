@@ -35,7 +35,7 @@ const HomePage = () => {
                     <>
                         <div className="text-center">
                             <h2 className="text-5xl font-bold text-gray-800 mb-3">
-                                Welcome to FoodShare
+                                Welcome to SURPLUS
                             </h2>
                             <p className="text-gray-600 mb-8 text-lg">
                                 Connecting Food, Connecting Hearts

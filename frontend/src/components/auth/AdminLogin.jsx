@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { admin } from '../../api/axios';
 
 const AdminLogin = () => {
     const navigate = useNavigate();
@@ -16,10 +17,14 @@ const AdminLogin = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle login logic here
-        console.log('Login attempt with:', formData);
+        try {
+            const response = await admin.login(formData);
+            console.log(response);
+        } catch (error) {
+            console.error('Login error:', error);
+        }
     };
 
     return (

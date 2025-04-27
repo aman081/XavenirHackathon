@@ -78,10 +78,10 @@ const ProviderHome = () => {
                 {/* Welcome Section */}
                 <div className="bg-indigo-950 rounded-lg shadow-lg p-6">
                     <h1 className="text-3xl font-bold text-white mb-4">
-                        Welcome to FoodShare
+                        Welcome to Surplus
                     </h1>
                     <p className="text-lg text-indigo-200 mb-6">
-                        FoodShare is a platform dedicated to reducing food waste
+                        SURPLUS is a platform dedicated to reducing food waste
                         and helping those in need by connecting food providers
                         with organizations that can distribute surplus food to
                         communities.

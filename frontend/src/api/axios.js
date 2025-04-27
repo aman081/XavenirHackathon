@@ -81,7 +81,7 @@ export const provider = {
     showRecipients: (supplyId) =>
         api.post("/provider/recepients", { supplyId }),
     chooseDistributor: (supplyId, distributorId) =>
-        api.post("/provider/choose-distributor", {supplyId, distributorId}),
+        api.post("/provider/choose-distributor", { supplyId, distributorId }),
     giveRating: (data) => api.post("/provider/give-rating", data),
 };
 
@@ -125,10 +125,10 @@ export const admin = {
     login: (credentials) => api.post("/admin/login", credentials),
     logout: () => api.post("/admin/logout"),
     verifyDistributor: (distributorId) =>
-        api.post(`/admin/verify-distributor/${distributorId}`),
+        api.get(`/admin/verifyDistributors/${distributorId}`),
     rejectDistributor: (distributorId) =>
-        api.post(`/admin/reject-distributor/${distributorId}`),
-    getUnverifiedDistributors: () => api.get("/admin/unverified-distributors"),
+        api.get(`/admin/rejectDistributor/${distributorId}`),
+    getUnverifiedDistributors: () => api.get("/admin/getUnverifiedDistributors")
 };
 
 // Common Routes

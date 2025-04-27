@@ -17,6 +17,7 @@ import DistributorTracking from "./components/distributor/DistributorTracking";
 import DistributorHistory from './components/distributor/DistributorHistory';
 import Home1 from './components/home/home1';
 import RecipientsList from "./components/provider/RecepientList";
+import AdminPanel from "./components/admin/AdminPanel";
 
 const App = () => {
     return (
@@ -33,6 +34,8 @@ const App = () => {
                 <Route path="/provider/login" element={<ProviderLogin />} />
                 <Route path="/distributor/register" element={<DistributorReg />} />
                 <Route path="/distributor/login" element={<DistributorLogin />} />
+
+                <Route path="/admin/panel" element={<AdminPanel />} />
                 
                 {/* Protected Provider Routes */}
                 <Route path="/provider" element={<Navigate to="/provider/home" replace />} />

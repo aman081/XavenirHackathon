@@ -23,7 +23,7 @@ const Navbar = ({ profile, userType }) => {
                     <div className="flex-shrink-0">
                         <Link to="/" className="flex items-center space-x-2">
                             <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent">
-                                FoodShare
+                                SURPLUS
                             </span>
                         </Link>
                     </div>

@@ -13,7 +13,7 @@ router.route("/login").post(loginAdmin);
 router.route("/logout").post(logoutAdmin);
 
 router.route("/getUnverifiedDistributors").get(getUnverifiedDistributors);
-router.route("/verifyDistributors").get(verifyDistributor);
-router.route("/rejectDistributor").get(rejectDistributor);
+router.route("/verifyDistributors/:distributorId").get(verifyDistributor);
+router.route("/rejectDistributor/:distributorId").get(rejectDistributor);
 
 export default router;
