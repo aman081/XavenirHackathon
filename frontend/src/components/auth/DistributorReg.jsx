@@ -54,7 +54,7 @@ const DistributorReg = () => {
                 if (response.data.token) {
                     localStorage.setItem('token', response.data.token);
                 }
-                navigate('/distributor/home');
+                navigate('/distributor/login');
             }
         } catch (err) {
             setError(

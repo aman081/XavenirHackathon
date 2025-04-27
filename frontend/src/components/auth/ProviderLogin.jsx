@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { provider } from '../../services/api';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { provider } from "../../services/api";
 
 const ProviderLogin = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        email: '',
-        password: ''
+        email: "",
+        password: "",
     });
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,14 +20,14 @@ const ProviderLogin = () => {
 
         try {
             const response = await provider.login(formData);
-            if (response.data && response.data.data.provider) {
-                navigate('/provider/home');
+            if (response.data) {
+                navigate("/provider/home");
             } else {
                 throw new Error("Invalid response format");
             }
         } catch (err) {
             console.error("Login error:", err);
-            setError(err.response?.data?.message || 'Login failed');
+            setError(err.response?.data?.message || "Login failed");
         }
     };
 
@@ -58,7 +58,10 @@ const ProviderLogin = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                             Email Address
                         </label>
                         <input
@@ -73,7 +76,10 @@ const ProviderLogin = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                             Password
                         </label>
                         <input

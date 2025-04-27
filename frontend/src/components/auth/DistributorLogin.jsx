@@ -22,7 +22,7 @@ const DistributorLogin = () => {
         e.preventDefault();
         try {
             const response = await distributor.login(formData);
-            if (response.data.token) {
+            if (response.data) {
                 navigate('/distributor/home');
             }
         } catch (err) {

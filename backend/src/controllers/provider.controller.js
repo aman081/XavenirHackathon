@@ -204,6 +204,15 @@ const getCurrentProvider = asyncHandler(async (req, res) => {
         );
 });
 
+const updateProviderLocation = asyncHandler(async (req, res) => {
+    const { supplyId, providerLatitude, providerLongitude } = req.body;
+    if (!providerId || !providerLatitude || !providerLongitude)
+        throw new MyError(
+            400,
+            "Provider ID, latitude and longitude are required",
+        );
+});
+
 export {
     registerProvider,
     loginProvider,

@@ -52,7 +52,7 @@ const ProviderReg = () => {
                 if (response.data.token) {
                     localStorage.setItem('token', response.data.token);
                 }
-                navigate('/provider/home');
+                navigate('/provider/login');
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Registration failed. Please try again.');
