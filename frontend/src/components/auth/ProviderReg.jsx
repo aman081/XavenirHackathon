@@ -49,7 +49,10 @@ const ProviderReg = () => {
 
             const response = await provider.register(submitData);
             if (response.status === 201) {
-                navigate('/provider/login');
+                if (response.data.token) {
+                    localStorage.setItem('token', response.data.token);
+                }
+                navigate('/provider/home');
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Registration failed. Please try again.');

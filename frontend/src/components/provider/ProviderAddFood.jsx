@@ -27,11 +27,7 @@ const LocationMarker = ({ setLocation }) => {
 
 const ProviderAddFood = () => {
     const [foodItems, setFoodItems] = useState([
-        {
-            name: '',
-            category: 'Veg',
-            quantity: ''
-        }
+        { name: '', category: 'Veg', quantity: '' }
     ]);
     const [location, setLocation] = useState({
         latitude: null,
@@ -82,11 +78,7 @@ const ProviderAddFood = () => {
     const addFoodItem = () => {
         setFoodItems([
             ...foodItems,
-            {
-                name: '',
-                category: 'Veg',
-                quantity: ''
-            }
+            { name: '', category: 'Veg', quantity: '' }
         ]);
     };
 
@@ -99,24 +91,19 @@ const ProviderAddFood = () => {
         e.preventDefault();
         setError("");
         setSuccess("");
-        
-        // Validate location
+
         if (!location.latitude || !location.longitude) {
             setError('Please select a location on the map');
             return;
         }
 
-        // Validate food items
-        const validItems = foodItems.filter(item => 
-            item.name && item.category && item.quantity
-        );
-        
+        const validItems = foodItems.filter(item => item.name && item.category && item.quantity);
+
         if (validItems.length === 0) {
             setError('Please add at least one food item');
             return;
         }
 
-        // Validate photo
         if (!foodPhoto) {
             setError('Please upload a photo of the food');
             return;
@@ -132,11 +119,7 @@ const ProviderAddFood = () => {
             const response = await provider.supplyFood(formData);
             if (response.data) {
                 setSuccess("Food items added successfully!");
-                setFoodItems([{
-                    name: '',
-                    category: 'Veg',
-                    quantity: ''
-                }]);
+                setFoodItems([{ name: '', category: 'Veg', quantity: '' }]);
                 setLocation({ latitude: null, longitude: null, address: '' });
                 setFoodPhoto(null);
             }
@@ -167,6 +150,7 @@ const ProviderAddFood = () => {
 
                 <div className="bg-indigo-950 rounded-xl shadow-lg p-8">
                     <form onSubmit={handleSubmit} className="space-y-8">
+
                         {/* Food Items Section */}
                         {foodItems.map((item, index) => (
                             <div key={index} className="border-2 border-indigo-900 rounded-xl p-6 space-y-6 hover:border-emerald-500/30 transition-all duration-300">
@@ -224,6 +208,18 @@ const ProviderAddFood = () => {
                             </div>
                         ))}
 
+                        {/* Add Another Food Item Button */}
+                        <div className="flex justify-end">
+                            <button
+                                type="button"
+                                onClick={addFoodItem}
+                                className="inline-flex items-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
+                            >
+                                <FaPlus className="mr-2" />
+                                Add Another Item
+                            </button>
+                        </div>
+
                         {/* Location Section */}
                         <div className="border-2 border-indigo-900 rounded-xl p-6 space-y-6 hover:border-emerald-500/30 transition-all duration-300">
                             <h3 className="text-xl font-semibold text-white">Location</h3>
@@ -244,6 +240,7 @@ const ProviderAddFood = () => {
                                         placeholder="Enter your location"
                                     />
                                 </div>
+
                                 <div className="h-64 rounded-lg overflow-hidden">
                                     <MapContainer 
                                         center={mapCenter} 
@@ -275,16 +272,8 @@ const ProviderAddFood = () => {
                             />
                         </div>
 
-                        <div className="flex justify-between pt-6">
-                            <button
-                                type="button"
-                                onClick={addFoodItem}
-                                className="inline-flex items-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
-                            >
-                                <FaPlus className="mr-2" />
-                                Add Another Item
-                            </button>
-
+                        {/* Submit Button */}
+                        <div className="flex justify-center pt-6">
                             <button
                                 type="submit"
                                 className="inline-flex items-center px-8 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
@@ -292,6 +281,7 @@ const ProviderAddFood = () => {
                                 Submit All Items
                             </button>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -299,4 +289,4 @@ const ProviderAddFood = () => {
     );
 };
 
-export default ProviderAddFood; 
+export default ProviderAddFood;

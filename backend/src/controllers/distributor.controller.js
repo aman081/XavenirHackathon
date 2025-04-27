@@ -9,7 +9,6 @@ import uploadFileOnCloudinary from "../utils/Cloudinary.js";
 import MyError from "../utils/MyError.js";
 import MyResponse from "../utils/MyResponse.js";
 import { Provider } from "../models/provider.models.js";
-import { Supply } from "../models/supply.models.js";
 
 const registerDistributor = asyncHandler(async (req, res) => {
     const { name, email, password, uniqueIdentifier } = req.body;
@@ -199,11 +198,21 @@ const givePhotoForSupply = asyncHandler(async (req, res) => {
         .json(new MyResponse(200, "Photo uploaded successfully", supply));
 });
 
+const getCurrentDistributor = asyncHandler(async (req, res) => {
+    const distributor = await Distributor.findById(req.user);
+    if (!distributor) throw new MyError(404, "Distributor not found");
+    distributor.password = undefined;
+    return res.status(200).json(new MyResponse(200, "Distributor fetched successfully", { distributor }));
+});
+
 export {
     getSuppliesNearMe,
     loginDistributor,
     logoutDistributor,
     registerDistributor,
-    selectSupply,giveRating
+    selectSupply,
+    givePhotoForSupply,
+    giveRating,
+    getCurrentDistributor
 };
 

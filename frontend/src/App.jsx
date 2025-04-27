@@ -15,13 +15,15 @@ import ProviderTracking from "./components/provider/ProviderTracking";
 import DistributorFoodNearMe from "./components/distributor/DistributorFoodNearMe";
 import DistributorTracking from "./components/distributor/DistributorTracking";
 import DistributorHistory from './components/distributor/DistributorHistory';
+import Home1 from './components/home/home1';
 
 const App = () => {
     return (
         <div className="min-h-screen flex flex-col">
             <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={<HomePage />} />
+                <Route path="/" element={<Home1 />} />
+                <Route path="/home" element={<HomePage />} />
                 <Route path="/about" element={<div>About Page</div>} />
                 
                 {/* Auth Routes */}

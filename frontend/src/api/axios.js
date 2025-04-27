@@ -90,6 +90,7 @@ export const distributor = {
     },
     login: (credentials) => api.post('/distributor/login', credentials),
     logout: () => api.get('/distributor/logout'),
+    getProfile: () => api.get('/distributor/profile'),
 
     // Food Management
     getSuppliesNearMe: (coordinates) => api.get('/distributor/supplies-near-me', { params: coordinates }),
