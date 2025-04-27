@@ -1,4 +1,5 @@
 import mongoose, { model, Schema } from "mongoose";
+import bcrypt from "bcrypt";
 
 const distributorSchema = new Schema(
     {
@@ -10,8 +11,8 @@ const distributorSchema = new Schema(
         isVerified: { type: Boolean, default: false },
         rating: {
             average: { type: Number, default: 0, min: 0, max: 5 },
-            count: { type: Number, default: 0 } 
-        }
+            count: { type: Number, default: 0 },
+        },
     },
     { timestamps: true },
 );

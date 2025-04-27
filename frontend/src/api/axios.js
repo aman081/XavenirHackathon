@@ -87,14 +87,14 @@ export const provider = {
 // Distributor Routes
 export const distributor = {
     // Authentication
-    register: (userData, avatar) => {
-        const formData = new FormData();
-        formData.append("avatar", avatar);
-        Object.keys(userData).forEach((key) => {
-            formData.append(key, userData[key]);
-        });
-        return api.post("/distributor/register", formData);
-    },
+
+    register: (data) =>
+        api.post("/distributor/register", data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        }),
+
     login: (credentials) => api.post("/distributor/login", credentials),
     logout: () => api.get("/distributor/logout"),
 

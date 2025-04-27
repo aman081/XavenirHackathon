@@ -7,6 +7,7 @@ import {
     registerDistributor,
     selectSupply,
 } from "../controllers/distributor.controller.js";
+import upload from "../middlewares/multer.middleware.js";
 
 const app = express.Router();
 

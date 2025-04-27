@@ -8,6 +8,7 @@ import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 import adminRoute from "./routes/admin.routes.js";
 
 import providerRoutes from "./routes/provider.routes.js";
+import distributorRoutes from "./routes/distributor.routes.js";
 
 const app = express();
 
@@ -25,11 +26,10 @@ app.get("/test", (req, res) => {
     res.send("Home route active!");
 });
 
-
 app.use("/provider", providerRoutes);
+app.use("/distributor", distributorRoutes);
 
 app.use("/admin", adminRoute);
-
 
 app.use(errorHandler);
 
