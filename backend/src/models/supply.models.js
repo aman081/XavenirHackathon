@@ -28,28 +28,6 @@ const supplySchema = new Schema(
                 required: true,
             },
         },
-        distributorLocation: {
-            type: {
-                type: String,
-                enum: ["Point"],
-                default: "Point",
-            },
-            coordinates: {
-                type: [Number],
-            },
-        },
-        liveLoc: [
-            {
-                type: {
-                    type: String,
-                    enum: ["Point"],
-                    default: "Point",
-                },
-                coordinates: {
-                    type: [Number],
-                },
-            },
-        ],
         providerSupplyPhoto: { type: String, required: true },
         distributorSupplyPhotos: [{ type: String }],
         providerRating: { type: Number, default: null },

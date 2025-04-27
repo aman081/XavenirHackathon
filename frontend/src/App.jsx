@@ -16,6 +16,7 @@ import DistributorFoodNearMe from "./components/distributor/DistributorFoodNearM
 import DistributorTracking from "./components/distributor/DistributorTracking";
 import DistributorHistory from './components/distributor/DistributorHistory';
 import Home1 from './components/home/home1';
+import RecipientsList from "./components/provider/RecepientList";
 
 const App = () => {
     return (
@@ -42,6 +43,7 @@ const App = () => {
                             <Route path="history" element={<ProviderHistory />} />
                             <Route path="add-food" element={<ProviderAddFood />} />
                             <Route path="tracking" element={<ProviderTracking />} />
+                            <Route path="recepients" element={<RecipientsList/>} />
                         </Routes>
                     </Layout>
                 } />

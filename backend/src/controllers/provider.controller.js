@@ -81,6 +81,7 @@ const supplyFood = asyncHandler(async (req, res) => {
         food: JSON.parse(foods),
         providerSupplyPhoto,
         providerLocation,
+        supplier: req.user
     });
 
     if (!supply) throw new MyError(500, "Failed to create supply");
@@ -110,38 +111,16 @@ const showRecepients = asyncHandler(async (req, res) => {
 });
 
 const chooseDistributor = asyncHandler(async (req, res) => {
-    const {
-        supplyId,
-        distributorId,
-        distributorLatitude,
-        distributorLongitude,
-    } = req.body;
+    const { supplyId, distributorId } = req.body;
 
-    if (
-        !supplyId ||
-        !distributorId ||
-        !distributorLatitude ||
-        !distributorLongitude
-    )
-        throw new MyError(
-            400,
-            "Supply ID, distributor ID and location are required",
-        );
-
-    const distributorLocation = {
-        type: "Point",
-        coordinates: [
-            parseFloat(distributorLongitude),
-            parseFloat(distributorLatitude),
-        ],
-    };
+    if (!supplyId || !distributorId)
+        throw new MyError(400, "Supply ID, distributor ID are required");
 
     const supply = await Supply.findById(supplyId);
     if (!supply) throw new MyError(404, "Supply not found");
 
     supply.receiver = distributorId;
     supply.recepients = [];
-    supply.distributorLocation = distributorLocation;
     await supply.save();
 
     return res
@@ -206,11 +185,30 @@ const getCurrentProvider = asyncHandler(async (req, res) => {
 
 const updateProviderLocation = asyncHandler(async (req, res) => {
     const { supplyId, providerLatitude, providerLongitude } = req.body;
-    if (!providerId || !providerLatitude || !providerLongitude)
+    if (!supplyId || !providerLatitude || !providerLongitude)
         throw new MyError(
             400,
-            "Provider ID, latitude and longitude are required",
+            "Supply ID, latitude and longitude are required",
         );
+
+    const supply = await Supply.findById(supplyId);
+    if (!supply) throw new MyError(404, "Supply not found");
+
+    supply.liveLoc.push({
+        type: "Point",
+        coordinates: [
+            parseFloat(providerLongitude),
+            parseFloat(providerLatitude),
+        ],
+    });
+
+    await supply.save();
+
+    return res.status(200).json(
+        new MyResponse(200, "Provider location updated successfully", {
+            supply,
+        }),
+    );
 });
 
 export {
@@ -222,4 +220,5 @@ export {
     chooseDistributor,
     giveRating,
     getCurrentProvider,
+    updateProviderLocation,
 };

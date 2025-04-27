@@ -122,7 +122,7 @@ const giveRating = asyncHandler(async (req, res) => {
 });
 
 const getSuppliesNearMe = asyncHandler(async (req, res) => {
-    const { latitude, longitude, maxDistance = 5000 } = req.query;
+    const { latitude, longitude, maxDistance = 5000000000000 } = req.query;
 
     if (!latitude || !longitude)
         throw new MyError(400, "Latitude and Longitude are required");
@@ -148,7 +148,7 @@ const getSuppliesNearMe = asyncHandler(async (req, res) => {
 });
 
 const selectSupply = asyncHandler(async (req, res) => {
-    const { supplyId } = req.params;
+    const { supplyId, location } = req.params;
 
     if (!supplyId) throw new MyError(400, "Supply ID is required");
 
@@ -163,7 +163,7 @@ const selectSupply = asyncHandler(async (req, res) => {
             "This supply is already assigned to a distributor",
         );
 
-    supply.receiver = distributorId;
+    supply.recepients.push(distributorId);
     await supply.save();
 
     return res
@@ -200,7 +200,11 @@ const getCurrentDistributor = asyncHandler(async (req, res) => {
     const distributor = await Distributor.findById(req.user);
     if (!distributor) throw new MyError(404, "Distributor not found");
     distributor.password = undefined;
-    return res.status(200).json(new MyResponse(200, "Distributor fetched successfully", { distributor }));
+    return res.status(200).json(
+        new MyResponse(200, "Distributor fetched successfully", {
+            distributor,
+        }),
+    );
 });
 
 export {

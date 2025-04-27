@@ -4,6 +4,7 @@ import { provider } from "../../api/axios";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useNavigate } from "react-router-dom";
 
 // Fix for Leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -29,6 +30,7 @@ const LocationMarker = ({ setLocation }) => {
 };
 
 const ProviderAddFood = () => {
+    const navigate = useNavigate();
     const [foodItems, setFoodItems] = useState([
         {
             name: "",
@@ -76,7 +78,7 @@ const ProviderAddFood = () => {
                 setError("Location not found. Please try a different address.");
             }
         } catch (err) {
-            setError("Error searching for location. Please try again.");
+            setError("Error searching for location. Please try again." | err);
         }
     };
 
@@ -149,6 +151,10 @@ const ProviderAddFood = () => {
                 setLocation({ latitude: null, longitude: null, address: "" });
                 setFoodPhoto(null);
             }
+
+            navigate("/provider/recepients", {
+                state: { supplyId: response.data.data.supply._id },
+            });
         } catch (err) {
             setError(
                 err.response?.data?.message ||

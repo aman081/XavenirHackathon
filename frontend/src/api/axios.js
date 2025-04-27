@@ -80,15 +80,16 @@ export const provider = {
     // Recipients
     showRecipients: (supplyId) =>
         api.post("/provider/recepients", { supplyId }),
-    chooseDistributor: (data) => api.post("/provider/choose-distributor", data),
+    chooseDistributor: (supplyId, distributorId) =>
+        api.post("/provider/choose-distributor", {supplyId, distributorId}),
     giveRating: (data) => api.post("/provider/give-rating", data),
 };
 
 // Distributor Routes
 export const distributor = {
     // Authentication
-   
-    getProfile: () => api.get('/distributor/profile'),
+
+    getProfile: () => api.get("/distributor/profile"),
 
     register: (data) =>
         api.post("/distributor/register", data, {
@@ -101,8 +102,13 @@ export const distributor = {
     logout: () => api.get("/distributor/logout"),
 
     // Food Management
-    getSuppliesNearMe: (coordinates) =>
-        api.get("/distributor/supplies-near-me", { params: coordinates }),
+    getSuppliesNearMe: (latitude, longitude) =>
+        api.get("/distributor/supplies-near-me", {
+            params: {
+                latitude,
+                longitude,
+            },
+        }),
     selectSupply: (supplyId) =>
         api.post(`/distributor/select-supply/${supplyId}`),
     givePhotoForSupply: (supplyId, photo) => {

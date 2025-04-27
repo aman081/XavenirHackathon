@@ -16,7 +16,8 @@ const ProviderSidebar = ({ onCollapse }) => {
         { path: '/provider/home', icon: <FaHome />, label: 'Home' },
         { path: '/provider/history', icon: <FaHistory />, label: 'History' },
         { path: '/provider/add-food', icon: <FaUtensils />, label: 'Donate Food' },
-        { path: '/provider/tracking', icon: <FaTruck />, label: 'Tracking' }
+        { path: '/provider/tracking', icon: <FaTruck />, label: 'Tracking' },
+        { path: '/provider/recepients', icon: <FaChevronRight className="h-4 w-4" />, label: 'Recepients' }
     ];
 
     return (
