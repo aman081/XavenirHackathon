@@ -87,6 +87,8 @@ export const provider = {
 // Distributor Routes
 export const distributor = {
     // Authentication
+   
+    getProfile: () => api.get('/distributor/profile'),
 
     register: (data) =>
         api.post("/distributor/register", data, {

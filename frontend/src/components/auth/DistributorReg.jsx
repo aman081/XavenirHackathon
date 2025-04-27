@@ -50,7 +50,11 @@ const DistributorReg = () => {
             const response = await distributor.register(data);
 
             if (response.status === 201) {
-                navigate("/distributor/login");
+                // Store the token if it's returned in the response
+                if (response.data.token) {
+                    localStorage.setItem('token', response.data.token);
+                }
+                navigate('/distributor/home');
             }
         } catch (err) {
             setError(

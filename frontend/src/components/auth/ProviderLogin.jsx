@@ -20,7 +20,7 @@ const ProviderLogin = () => {
 
         try {
             const response = await provider.login(formData);
-            if (response.data && response.data.provider) {
+            if (response.data && response.data.data.provider) {
                 navigate('/provider/home');
             } else {
                 throw new Error("Invalid response format");

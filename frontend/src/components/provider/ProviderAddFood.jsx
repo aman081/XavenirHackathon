@@ -30,6 +30,7 @@ const LocationMarker = ({ setLocation }) => {
 
 const ProviderAddFood = () => {
     const [foodItems, setFoodItems] = useState([
+
         {
             name: "",
             category: "Veg",
@@ -89,6 +90,7 @@ const ProviderAddFood = () => {
     const addFoodItem = () => {
         setFoodItems([
             ...foodItems,
+
             {
                 name: "",
                 category: "Veg",
@@ -107,7 +109,6 @@ const ProviderAddFood = () => {
         setError("");
         setSuccess("");
 
-        // Validate location
         if (!location.latitude || !location.longitude) {
             setError("Please select a location on the map");
             return;
@@ -123,7 +124,6 @@ const ProviderAddFood = () => {
             return;
         }
 
-        // Validate photo
         if (!foodPhoto) {
             setError("Please upload a photo of the food");
             return;
@@ -139,6 +139,7 @@ const ProviderAddFood = () => {
 
             if (response.data) {
                 setSuccess("Food items added successfully!");
+
                 setFoodItems([
                     {
                         name: "",
@@ -181,6 +182,7 @@ const ProviderAddFood = () => {
 
                 <div className="bg-indigo-950 rounded-xl shadow-lg p-8">
                     <form onSubmit={handleSubmit} className="space-y-8">
+
                         {/* Food Items Section */}
                         {foodItems.map((item, index) => (
                             <div
@@ -273,6 +275,8 @@ const ProviderAddFood = () => {
                             </div>
                         ))}
 
+                        {/* Add Another Food Item Button */}
+                        <div className="flex justify-end">
                         <div className="flex justify-center pt-2">
                             <button
                                 type="button"
@@ -282,7 +286,6 @@ const ProviderAddFood = () => {
                                 <FaPlus className="mr-2" />
                                 Add Another Item
                             </button>
-                            \
                         </div>
 
                         {/* Location Section */}
@@ -314,6 +317,7 @@ const ProviderAddFood = () => {
                                         placeholder="Enter your location"
                                     />
                                 </div>
+
                                 <div className="h-64 rounded-lg overflow-hidden">
                                     <MapContainer
                                         center={mapCenter}
@@ -358,6 +362,7 @@ const ProviderAddFood = () => {
                             />
                         </div>
 
+                        {/* Submit Button */}
                         <div className="flex justify-center pt-6">
                             <button
                                 type="submit"
@@ -366,6 +371,7 @@ const ProviderAddFood = () => {
                                 Submit All Items
                             </button>
                         </div>
+
                     </form>
                 </div>
             </div>
