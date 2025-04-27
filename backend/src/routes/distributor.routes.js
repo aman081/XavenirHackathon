@@ -9,9 +9,8 @@ import {
     selectSupply,
     givePhotoForSupply,
     giveRating,
-    getCurrentDistributor
+    getCurrentDistributor,
 } from "../controllers/distributor.controller.js";
-import upload from "../middlewares/multer.middleware.js";
 
 const app = express.Router();
 

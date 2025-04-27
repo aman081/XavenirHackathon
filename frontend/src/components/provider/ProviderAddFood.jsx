@@ -30,7 +30,6 @@ const LocationMarker = ({ setLocation }) => {
 
 const ProviderAddFood = () => {
     const [foodItems, setFoodItems] = useState([
-
         {
             name: "",
             category: "Veg",
@@ -182,7 +181,6 @@ const ProviderAddFood = () => {
 
                 <div className="bg-indigo-950 rounded-xl shadow-lg p-8">
                     <form onSubmit={handleSubmit} className="space-y-8">
-
                         {/* Food Items Section */}
                         {foodItems.map((item, index) => (
                             <div
@@ -277,15 +275,16 @@ const ProviderAddFood = () => {
 
                         {/* Add Another Food Item Button */}
                         <div className="flex justify-end">
-                        <div className="flex justify-center pt-2">
-                            <button
-                                type="button"
-                                onClick={addFoodItem}
-                                className="inline-flex items-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
-                            >
-                                <FaPlus className="mr-2" />
-                                Add Another Item
-                            </button>
+                            <div className="flex justify-center pt-2">
+                                <button
+                                    type="button"
+                                    onClick={addFoodItem}
+                                    className="inline-flex items-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
+                                >
+                                    <FaPlus className="mr-2" />
+                                    Add Another Item
+                                </button>
+                            </div>
                         </div>
 
                         {/* Location Section */}
@@ -371,7 +370,6 @@ const ProviderAddFood = () => {
                                 Submit All Items
                             </button>
                         </div>
-
                     </form>
                 </div>
             </div>

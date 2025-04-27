@@ -210,6 +210,6 @@ export {
     registerDistributor,
     selectSupply,
     givePhotoForSupply,
-    getCurrentDistributor
+    getCurrentDistributor,
     giveRating,
 };
