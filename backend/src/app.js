@@ -33,8 +33,9 @@ app.get("/test", (req, res) => {
 });
 
 app.use("/provider", providerRoutes);
-app.use("/admin", adminRoute);
 app.use("/distributor", distributorRoutes);
+app.use("/distributor", distributorRoutes);
+app.use("/admin", adminRoute);
 
 app.use(errorHandler);
 

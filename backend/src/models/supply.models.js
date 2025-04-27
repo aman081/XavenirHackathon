@@ -32,23 +32,31 @@ const supplySchema = new Schema(
             type: {
                 type: String,
                 enum: ["Point"],
-                required: true,
                 default: "Point",
             },
             coordinates: {
                 type: [Number],
-                required: true,
             },
         },
         providerSupplyPhoto: { type: String, required: true },
         distributorSupplyPhotos: [{ type: String }],
-        providerRating: {type: Number, default: null },
-        distributorRatings: {type: Number, default: null},
+        providerRating: { type: Number, default: null },
+        distributorRatings: { type: Number, default: null },
     },
     { timestamps: true },
 );
 
 supplySchema.index({ providerLocation: "2dsphere" });
 supplySchema.index({ distributorLocation: "2dsphere" });
+supplySchema.pre("save", function (next) {
+    if (
+        this.distributorLocation &&
+        (!this.distributorLocation.coordinates ||
+            this.distributorLocation.coordinates.length !== 2)
+    ) {
+        this.distributorLocation = undefined;
+    }
+    next();
+});
 
 export const Supply = mongoose.models.Supply || model("Supply", supplySchema);

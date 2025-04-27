@@ -80,7 +80,6 @@ const logoutDistributor = asyncHandler(async (req, res) => {
     return res.status(200).json(new MyResponse(200, "Logged out successfully"));
 });
 
-
 const giveRating = asyncHandler(async (req, res) => {
     const { supplyId, rating } = req.body;
     if (!supplyId || !rating)
@@ -92,8 +91,7 @@ const giveRating = asyncHandler(async (req, res) => {
 
     const supply = await Supply.findById(supplyId);
 
-    if(!supply) throw new MyError(404, "Supply not found");
-
+    if (!supply) throw new MyError(404, "Supply not found");
 
     const provider = await Provider.findById(supply.providerId);
     if (!provider) throw new MyError(404, "Provider not found");
@@ -119,8 +117,8 @@ const giveRating = asyncHandler(async (req, res) => {
     });
 
     return res
-       .status(200)
-       .json(new MyResponse(200, "Rating given successfully"));
+        .status(200)
+        .json(new MyResponse(200, "Rating given successfully"));
 });
 
 const getSuppliesNearMe = asyncHandler(async (req, res) => {
@@ -212,7 +210,6 @@ export {
     registerDistributor,
     selectSupply,
     givePhotoForSupply,
-    giveRating,
     getCurrentDistributor
+    giveRating,
 };
-

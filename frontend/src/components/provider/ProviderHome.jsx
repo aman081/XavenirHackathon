@@ -21,7 +21,9 @@ const ProviderHome = () => {
                 setLoading(false);
             } catch (err) {
                 console.error("Error fetching profile:", err);
-                setError(err.response?.data?.message || "Failed to fetch profile");
+                setError(
+                    err.response?.data?.message || "Failed to fetch profile",
+                );
                 setLoading(false);
             }
         };
@@ -106,7 +108,10 @@ const ProviderHome = () => {
                                     <div className="flex items-center">
                                         <FaStar className="text-yellow-400 mr-1" />
                                         <span className="font-medium text-white">
-                                            {profile?.rating?.average?.toFixed(1) || "0.0"}/5.0
+                                            {profile?.rating?.average?.toFixed(
+                                                1,
+                                            ) || "0.0"}
+                                            /5.0
                                         </span>
                                     </div>
                                 </div>

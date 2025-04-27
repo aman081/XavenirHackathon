@@ -1,33 +1,33 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { distributor } from '../../api/axios';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { distributor } from "../../api/axios";
 
 const DistributorReg = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        uniqueIdentifier: '',
-        avatar: null
+        name: "",
+        email: "",
+        password: "",
+        uniqueIdentifier: "",
+        avatar: null,
     });
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
     const [previewUrl, setPreviewUrl] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
     };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setFormData(prev => ({
+            setFormData((prev) => ({
                 ...prev,
-                avatar: file
+                avatar: file,
             }));
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -40,7 +40,15 @@ const DistributorReg = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await distributor.register(formData, formData.avatar);
+            const data = new FormData();
+            data.append("name", formData.name);
+            data.append("email", formData.email);
+            data.append("password", formData.password);
+            data.append("uniqueIdentifier", formData.uniqueIdentifier);
+            data.append("avatar", formData.avatar);
+
+            const response = await distributor.register(data);
+
             if (response.status === 201) {
                 // Store the token if it's returned in the response
                 if (response.data.token) {
@@ -49,7 +57,10 @@ const DistributorReg = () => {
                 navigate('/distributor/home');
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Registration failed. Please try again.');
+            setError(
+                err.response?.data?.message ||
+                    "Registration failed. Please try again.",
+            );
         }
     };
 
@@ -81,7 +92,10 @@ const DistributorReg = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                            htmlFor="name"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                             Organization Name
                         </label>
                         <input
@@ -96,7 +110,10 @@ const DistributorReg = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                             Email Address
                         </label>
                         <input
@@ -111,7 +128,10 @@ const DistributorReg = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                             Password
                         </label>
                         <input
@@ -126,7 +146,10 @@ const DistributorReg = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="uniqueIdentifier" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                            htmlFor="uniqueIdentifier"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                             Unique Identifier
                         </label>
                         <input
@@ -141,7 +164,10 @@ const DistributorReg = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="avatar" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                            htmlFor="avatar"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                             Organization Logo
                         </label>
                         <input
@@ -155,7 +181,11 @@ const DistributorReg = () => {
                         />
                         {previewUrl && (
                             <div className="mt-2">
-                                <img src={previewUrl} alt="Preview" className="h-20 w-20 object-cover rounded-lg" />
+                                <img
+                                    src={previewUrl}
+                                    alt="Preview"
+                                    className="h-20 w-20 object-cover rounded-lg"
+                                />
                             </div>
                         )}
                     </div>
@@ -170,9 +200,9 @@ const DistributorReg = () => {
 
                 <div className="mt-6 text-center">
                     <p className="text-sm text-gray-600">
-                        Already have an account?{' '}
+                        Already have an account?{" "}
                         <button
-                            onClick={() => navigate('/distributor/login')}
+                            onClick={() => navigate("/distributor/login")}
                             className="font-medium text-yellow-600 hover:text-yellow-500"
                         >
                             Login
@@ -182,7 +212,7 @@ const DistributorReg = () => {
 
                 <div className="mt-4 text-center">
                     <button
-                        onClick={() => navigate('/')}
+                        onClick={() => navigate("/")}
                         className="text-sm font-medium text-gray-600 hover:text-gray-500"
                     >
                         Back to home
