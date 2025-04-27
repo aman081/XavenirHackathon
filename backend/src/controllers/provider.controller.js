@@ -58,10 +58,12 @@ const logoutProvider = asyncHandler(async (req, res) => {
 
 const supplyFood = asyncHandler(async (req, res) => {
     const { foods, providerLatitude, providerLongitude } = req.body;
+
     if (!foods || !foods.length || !providerLatitude || !providerLongitude)
         throw new MyError(400, "Foods and provider location are required");
 
     const supplyPhotoPath = req.file?.path;
+
     const providerSupplyPhoto = await uploadFileOnCloudinary(
         req.file.filename,
         supplyPhotoPath,
@@ -76,7 +78,7 @@ const supplyFood = asyncHandler(async (req, res) => {
     };
 
     const supply = await Supply.create({
-        food: foods,
+        food: JSON.parse(foods),
         providerSupplyPhoto,
         providerLocation,
     });
@@ -160,8 +162,7 @@ const giveRating = asyncHandler(async (req, res) => {
 
     const supply = await Supply.findById(supplyId);
 
-    if(!supply) throw new MyError(404, "Supply not found");
-
+    if (!supply) throw new MyError(404, "Supply not found");
 
     const distributor = await Distributor.findById(supply.distributorId);
     if (!distributor) throw new MyError(404, "distributor not found");
@@ -178,7 +179,8 @@ const giveRating = asyncHandler(async (req, res) => {
 
     const newCount = distributor.rating.count + 1;
     const newAverage =
-        (distributor.rating.average * distributor.rating.count + rating) / newCount;
+        (distributor.rating.average * distributor.rating.count + rating) /
+        newCount;
     await Distributor.findByIdAndUpdate(supply.distributorId, {
         $set: {
             "rating.average": newAverage,
@@ -187,15 +189,19 @@ const giveRating = asyncHandler(async (req, res) => {
     });
 
     return res
-       .status(200)
-       .json(new MyResponse(200, "Rating given successfully"));
+        .status(200)
+        .json(new MyResponse(200, "Rating given successfully"));
 });
 
 const getCurrentProvider = asyncHandler(async (req, res) => {
     const provider = await Provider.findById(req.user);
     if (!provider) throw new MyError(404, "Provider not found");
     provider.password = undefined;
-    return res.status(200).json(new MyResponse(200, "Provider fetched successfully", { provider }));
+    return res
+        .status(200)
+        .json(
+            new MyResponse(200, "Provider fetched successfully", { provider }),
+        );
 });
 
 export {
@@ -206,5 +212,5 @@ export {
     showRecepients,
     chooseDistributor,
     giveRating,
-    getCurrentProvider
+    getCurrentProvider,
 };
